@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://silgo-go.github.io/sitemap.xml
