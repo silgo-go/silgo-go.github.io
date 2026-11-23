@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>필고 · 필기 고수</title>
+<meta name="description" content="필고(필기 고수): 스마트공장기능사 필기를 큐넷 CBT 화면 그대로 풀어 보는 무료 모의고사. 단원별 연습, 오답 노트, 단원별 채점. 실기는 실고에서.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="필고 · 필기 고수">
+<meta property="og:description" content="기능사 필기를 CBT 화면 그대로 풀어 보는 무료 모의고사">
+<meta property="og:url" content="https://silgo-go.github.io/pilgo">
+<meta property="og:image" content="https://silgo-go.github.io/og.png">
+<meta property="og:site_name" content="실고">
+<link rel="canonical" href="https://silgo-go.github.io/pilgo">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="theme-color" content="#f4f6f9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b8a5f'/%3E%3Cpath d='M18 46l4-12 20-20 8 8-20 20z' fill='%23fff'/%3E%3Cpath d='M18 46l12-4' stroke='%230b8a5f' stroke-width='3'/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem("silgo-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* 필고: 실고와 같은 틀(밝은 회색 바탕 + 흰 카드), 색만 초록으로 구분. CBT 화면은 큐넷처럼 남색 머리줄 + 답안 표기란 */
+:root{
+  --bg:#f4f6f9;--panel:#fff;--fg:#191f28;--muted:#5f6b7a;--line:#e3e7ec;
+  --accent:#0b8a5f;--accent-fg:#fff;--accent-soft:#e3f4ec;--hero1:#e4f5ed;
+  --ok:#1f7a45;--ok-soft:#e4f3ea;--bad:#c0392b;--bad-soft:#fbe9e6;--warn:#a86b12;
+  --cbt:#24395e;--cbt-fg:#fff;--cbt2:#e9eef6;
+  --shadow:0 1px 2px rgba(17,24,39,.04),0 8px 24px rgba(17,24,39,.06);
+  --sans:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--qfs:17px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1218;--panel:#181c24;--fg:#e8ecf2;--muted:#9aa4b3;--line:#2a303b;
+  --accent:#4fcf9b;--accent-fg:#06140e;--accent-soft:#16302a;--hero1:#14261f;
+  --ok:#6fcf8f;--ok-soft:#173324;--bad:#ef7b6e;--bad-soft:#3a1f1b;--warn:#e2b25a;
+  --cbt:#1d2b45;--cbt-fg:#e8ecf2;--cbt2:#1f2633;--shadow:0 0 0 1px #232936;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1218;--panel:#181c24;--fg:#e8ecf2;--muted:#9aa4b3;--line:#2a303b;
+  --accent:#4fcf9b;--accent-fg:#06140e;--accent-soft:#16302a;--hero1:#14261f;
+  --ok:#6fcf8f;--ok-soft:#173324;--bad:#ef7b6e;--bad-soft:#3a1f1b;--warn:#e2b25a;
+  --cbt:#1d2b45;--cbt-fg:#e8ecf2;--cbt2:#1f2633;--shadow:0 0 0 1px #232936;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(40px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border-radius:22px;box-shadow:var(--shadow);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+h1{font-size:24px;margin:0;letter-spacing:-.02em}
+h2{font-size:17px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13.5px;margin:0}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:11px 16px;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn:disabled{opacity:.5;cursor:default}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:6px 12px;font-size:13px;min-height:34px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:700}
+/* 첫 화면 */
+.hero{background:linear-gradient(140deg,var(--hero1) 0%,var(--panel) 72%);border-radius:24px;box-shadow:var(--shadow);padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.htop{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.htop .sp{flex:1}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:54px;height:54px;flex:none}
+.tagp{display:inline-block;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700;border-radius:8px;padding:1px 8px;margin-top:2px}
+.slogan{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.slogan small{display:block;font-size:13.5px;font-weight:400;color:var(--muted)}
+.certrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cert{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;min-width:132px}
+.cert b{font-size:14px}.cert span{font-size:12px;color:var(--muted)}
+.cert[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cert:disabled{opacity:.55;cursor:default}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--bg);border-radius:14px;padding:9px 10px;display:flex;flex-direction:column}
+.stat span{font-size:12px;color:var(--muted)}.stat b{font-size:22px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat small{font-size:11.5px;color:var(--muted)}
+.act{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:14px;width:100%}
+.act .ic{width:42px;height:42px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none;font-size:20px}
+.act b{display:block;font-size:16px}.act span{font-size:13px;color:var(--muted)}
+.act.main{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}.act.main span{color:inherit;opacity:.85}.act.main .ic{background:rgba(255,255,255,.18);color:inherit}
+.acts{display:flex;flex-direction:column;gap:8px}
+.hist{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.hist li{display:flex;gap:10px;align-items:center;font-size:14px;padding:7px 10px;border-radius:10px;background:var(--bg)}
+.hist li b{font-variant-numeric:tabular-nums;min-width:44px}.hist li .p{margin-left:auto;font-size:12px;font-weight:700}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+.ulist{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ubtn{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ubtn b{font-size:14px}.ubtn small{font-size:12px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.silgo{display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit}
+.silgo .ic{width:42px;height:42px;flex:none}
+.foot{text-align:center;font-size:12px;color:var(--muted)}
+/* 로그인 */
+.gate{display:flex;flex-direction:column;gap:10px}
+.gate input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font-size:16px}
+.gtabs{display:flex;gap:6px}
+.gerr{color:var(--bad);font-size:14px;margin:0}
+.ginfo{color:var(--ok);font-size:14px;margin:0}
+.linkb{border:0;background:none;padding:4px 0;color:var(--muted);text-decoration:underline;font-size:13.5px;align-self:flex-start}
+/* CBT 시험 화면 */
+.cbt{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column}
+.cbth{background:var(--cbt);color:var(--cbt-fg);padding:max(8px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.cbth .t{font-weight:700;font-size:15px}
+.cbth .who{font-size:12.5px;opacity:.85}
+.cbth .sp{flex:1}
+.timer{font-family:var(--mono);font-weight:700;font-size:17px;background:rgba(255,255,255,.12);border-radius:8px;padding:2px 10px;font-variant-numeric:tabular-nums}
+.timer.low{background:#c0392b;color:#fff}
+.fsz{display:flex;gap:3px;align-items:center;font-size:12px}
+.fsz button{border:1px solid rgba(255,255,255,.35);background:transparent;color:inherit;border-radius:6px;padding:0 7px;min-height:30px;min-width:30px;font-weight:700}
+.fsz button[aria-pressed="true"]{background:#fff;color:var(--cbt)}
+.cbtb{flex:1;min-height:0;display:flex;gap:12px;padding:12px max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px));max-width:1100px;width:100%;margin:0 auto}
+.qpane{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding-bottom:12px}
+.qcard{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:16px 16px 12px;font-size:var(--qfs)}
+.qno{font-weight:700;color:var(--accent);font-family:var(--mono);font-size:.9em}
+.qstem{margin:4px 0 12px;font-weight:500;line-height:1.6}
+.opts{display:flex;flex-direction:column;gap:7px;margin:0;padding:0;list-style:none}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:10px 12px;font-size:1em;line-height:1.5;min-height:46px}
+.opt .n{flex:none;width:1.6em;height:1.6em;border-radius:50%;border:1.5px solid var(--muted);display:grid;place-items:center;font-size:.85em;font-weight:700;margin-top:.05em}
+.opt[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-checked="true"] .n{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .n{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .n{background:var(--bad);border-color:var(--bad);color:#fff}
+.qnav{display:flex;gap:8px}
+.qnav .btn{flex:1}
+.sheet{width:300px;flex:none;background:var(--panel);border-radius:16px 16px 0 0;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:0}
+.sheet h3{margin:0;font-size:14px;padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.sheet h3 small{margin-left:auto;color:var(--muted);font-weight:400}
+.srows{overflow-y:auto;padding:6px 8px 10px;display:flex;flex-direction:column;gap:2px}
+.srow{display:flex;align-items:center;gap:4px;padding:2px 4px;border-radius:8px}
+.srow.cur{background:var(--cbt2)}
+.srow .k{width:30px;text-align:right;font-family:var(--mono);font-size:12.5px;color:var(--muted);border:0;background:none;padding:6px 4px 6px 0}
+.srow .c{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:700;padding:0;display:grid;place-items:center}
+.srow .c[aria-pressed="true"]{background:var(--fg);color:var(--panel);border-color:var(--fg)}
+.cbtf{display:flex;gap:8px;align-items:center;padding:10px max(12px,env(safe-area-inset-right,0px)) max(10px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:var(--panel);border-top:1px solid var(--line)}
+.cbtf .cnt{font-size:13px;color:var(--muted)}
+.cbtf .btn{padding:9px 12px;font-size:14px;white-space:nowrap}.cbtf .cnt{white-space:nowrap}
+.cbtf .sp{flex:1}
+.shtog{display:none}.shclose{display:none!important}
+@media (max-width:820px){
+ .sheet{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:70vh;z-index:45;transform:translateY(105%);transition:transform .2s;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);padding-bottom:env(safe-area-inset-bottom,0px)}
+ .sheet.on{transform:none}
+ .srows{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 10px}
+}
+@media (max-width:400px){ .srows{grid-template-columns:1fr} .cbtf{gap:6px} .cbtf .cnt{display:none}
+ .shtog{display:inline-flex}
+ .shclose{display:inline-flex!important}
+}
+/* 결과 */
+.big{display:flex;align-items:baseline;gap:10px}
+.big b{font-size:44px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.verdict{font-weight:700;font-size:18px}
+.utab{width:100%;border-collapse:collapse;font-size:14px}
+.utab th,.utab td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left}
+.utab th{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
+.utab td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.utab .bar{width:70px;display:inline-block;vertical-align:middle}
+.rv{display:flex;flex-direction:column;gap:10px}
+.rvq{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:14.5px}
+.rvq.x{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.rvq .st{font-weight:500}
+.ans{display:flex;flex-direction:column;gap:2px;font-size:14px;background:var(--bg);border-radius:10px;padding:8px 10px}
+.ans .me.x{color:var(--bad)}.ans .me.o{color:var(--ok)}.ans .co{color:var(--ok);font-weight:700}
+.exp{font-size:13.5px;color:var(--muted);margin:0}
+.ov{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.ovin{background:var(--panel);border-radius:18px;max-width:380px;width:100%;padding:18px;display:flex;flex-direction:column;gap:10px}
+.ovbtns{display:flex;gap:8px}.ovbtns .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:90;background:#1d2330;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;pointer-events:none;transition:.2s;max-width:calc(100vw - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.fb{border-radius:12px;padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.fb.o{background:var(--ok-soft)}.fb.x{background:var(--bad-soft)}
+.fb b{font-size:15px}
+.pgtop{display:flex;align-items:center;gap:8px}
+.pgtop h2{flex:1}
+.pill{font-size:12px;font-weight:700;border-radius:8px;padding:2px 8px;background:var(--accent-soft);color:var(--accent)}
+.empty{color:var(--muted);font-size:14px;margin:0;text-align:center;padding:10px 0}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="card"><p class="sub">불러오는 중...</p></div></div>
+<script>
+/* 필고 문제 은행: 스마트공장기능사 필기 (출제기준 단원별, 개념 문제)
+   형식: [단원키, 문제, [보기1(정답), 보기2, 보기3, 보기4], 해설]  ← 정답은 항상 첫 번째로 적고, 화면에서 섞어요 */
+const PG_UNITS={
+ net:{n:"통신 네트워크",k:12},plc:{n:"PLC·특수모듈",k:6},pn:{n:"공기압",k:6},sen:{n:"센서",k:5},mot:{n:"모터·구동기",k:5},
+ scada:{n:"감시제어(SCADA)",k:4},daq:{n:"데이터 수집",k:4},dif:{n:"데이터 인터페이스",k:4},rob:{n:"로봇 인터페이스",k:4},
+ hmi:{n:"HMI",k:4},safe:{n:"안전관리",k:3},ee:{n:"전기전자 조립",k:3}};
+const PG_Q=[
+/* ── 통신 네트워크 ── */
+["net","OSI 7계층 중 데이터의 암호화, 압축, 코드 변환을 담당하는 계층은?",["표현 계층","세션 계층","전송 계층","응용 계층"],"표현 계층(6계층)은 데이터를 서로 이해할 수 있는 형식으로 바꿔요. 암호화·압축·코드 변환이 여기서 일어나요. 세션 계층은 대화(연결) 관리, 전송 계층은 종단 간 신뢰성을 맡아요."],
+["net","OSI 7계층 중 데이터가 목적지까지 가는 경로를 정하는(라우팅) 계층은?",["네트워크 계층","데이터 링크 계층","물리 계층","전송 계층"],"네트워크 계층(3계층)이 IP 주소를 보고 경로를 정해요. 라우터가 이 계층 장비예요."],
+["net","MAC 주소를 사용하고, 프레임 단위로 오류를 검출하는 OSI 계층은?",["데이터 링크 계층","네트워크 계층","물리 계층","세션 계층"],"데이터 링크 계층(2계층)은 같은 네트워크 안에서 MAC 주소로 프레임을 전달하고 오류를 검출해요. 스위치가 대표 장비예요."],
+["net","TCP/IP에서 전송 계층에 해당하는 프로토콜은?",["UDP","IP","ARP","ICMP"],"전송 계층에는 TCP와 UDP가 있어요. IP·ARP·ICMP는 인터넷(네트워크) 계층 쪽 프로토콜이에요."],
+["net","연결을 먼저 맺고, 순서 보장·재전송·흐름 제어로 신뢰성 있게 데이터를 보내는 프로토콜은?",["TCP","UDP","IP","HTTP"],"TCP는 연결형이라 3방향 핸드셰이크로 연결하고, 빠진 데이터는 다시 보내요. UDP는 연결 없이 빠르게 보내지만 신뢰성은 보장하지 않아요."],
+["net","IPv4 주소의 길이는?",["32비트","48비트","64비트","128비트"],"IPv4는 32비트(8비트 × 4칸, 예: 192.168.0.1)예요. 48비트는 MAC 주소, 128비트는 IPv6예요."],
+["net","IPv6 주소의 길이는?",["128비트","32비트","48비트","64비트"],"IPv6는 주소가 모자란 IPv4를 대신하려고 만든 128비트 주소예요. 16진수 8묶음으로 적어요."],
+["net","랜카드(NIC)에 붙어 있는 MAC 주소의 길이는?",["48비트","32비트","64비트","128비트"],"MAC 주소는 48비트(예: 00:1A:2B:3C:4D:5E)이고, 앞 24비트는 제조사 번호예요."],
+["net","IP 주소를 알고 있을 때, 그 장치의 MAC 주소를 알아내는 프로토콜은?",["ARP","RARP","DHCP","DNS"],"ARP는 'IP가 이거인 장치, MAC 주소 알려줘' 하고 물어보는 프로토콜이에요. RARP는 반대로 MAC으로 IP를 찾아요."],
+["net","네트워크에 접속한 장치에 IP 주소를 자동으로 나눠 주는 프로토콜은?",["DHCP","DNS","ARP","FTP"],"DHCP 서버가 IP 주소, 서브넷 마스크, 게이트웨이를 자동으로 줘요. DNS는 도메인 이름을 IP 주소로 바꿔요."],
+["net","ping 명령으로 상대 장치와 연결되는지 확인할 때 쓰는 프로토콜은?",["ICMP","UDP","ARP","SMTP"],"ping은 ICMP 에코 요청/응답을 주고받아서 연결 상태와 응답 시간을 확인해요. 통신 유지관리에서 제일 먼저 쓰는 명령이에요."],
+["net","서브넷 마스크의 역할로 옳은 것은?",["IP 주소에서 네트워크 부분과 호스트 부분을 구분한다","MAC 주소를 IP 주소로 바꾼다","도메인 이름을 IP 주소로 바꾼다","데이터를 암호화한다"],"서브넷 마스크(예: 255.255.255.0)는 IP 주소 중 어디까지가 네트워크 번호인지 알려 줘요. 같은 네트워크인지 판단할 때 써요."],
+["net","MAC 주소를 보고 데이터를 목적지 포트로만 보내 주는 네트워크 장비는?",["스위치","허브","리피터","모뎀"],"스위치는 MAC 주소 표를 만들어서 필요한 포트로만 보내요. 허브는 들어온 데이터를 모든 포트로 뿌려서 충돌이 많아요."],
+["net","서로 다른 네트워크를 연결하고 가장 알맞은 경로를 골라 데이터를 보내는 장비는?",["라우터","허브","리피터","브리지"],"라우터는 3계층 장비로, IP 주소를 보고 다른 네트워크로 가는 경로를 정해요."],
+["net","약해진 신호를 증폭·재생해서 전송 거리를 늘려 주는 물리 계층 장비는?",["리피터","라우터","스위치","게이트웨이"],"리피터는 신호만 다시 키워 줄 뿐 주소는 보지 않는 1계층 장비예요."],
+["net","모든 장치가 중앙의 허브(스위치)에 연결되어, 중앙 장비가 고장 나면 전체 통신이 멈추는 토폴로지는?",["스타형","버스형","링형","메시형"],"스타형은 관리와 증설이 쉽지만 중앙 장비에 문제가 생기면 전체가 멈춰요."],
+["net","케이블 하나에 여러 장치를 연결하고, 케이블 양 끝에 종단 저항을 다는 토폴로지는?",["버스형","스타형","링형","트리형"],"버스형은 한 줄에 장치를 매다는 방식이에요. 신호 반사를 막으려고 양 끝에 종단 저항을 달아요."],
+["net","UTP 케이블(랜선) 끝에 다는 커넥터는?",["RJ-45","RJ-11","BNC","DB-9"],"랜선은 8핀 RJ-45 커넥터를 써요. RJ-11은 전화선, BNC는 동축 케이블, DB-9은 RS-232C 같은 시리얼 통신에 써요."],
+["net","광섬유 케이블의 특징으로 옳지 않은 것은?",["전자기 간섭(노이즈)에 약하다","전송 대역폭이 넓다","먼 거리까지 신호 손실이 적다","가늘고 가볍다"],"광케이블은 빛으로 신호를 보내서 전자기 노이즈의 영향을 거의 받지 않아요. 그래서 공장처럼 노이즈 많은 곳에서도 좋아요."],
+["net","산업용 이더넷 프로토콜이 아닌 것은?",["RS-232C","EtherCAT","PROFINET","Modbus TCP"],"RS-232C는 1:1 시리얼 통신 규격이에요. EtherCAT·PROFINET·Modbus TCP는 이더넷 기반 산업용 통신이에요."],
+["net","RS-485 통신의 특징으로 옳은 것은?",["차동(평형) 신호를 써서 노이즈에 강하고 여러 장치를 연결할 수 있다","1:1 연결만 가능하다","광섬유로만 연결한다","무선 통신 방식이다"],"RS-485는 두 선의 전압 차로 신호를 보내서 노이즈에 강하고, 한 선로에 여러 장치(멀티드롭)를 연결할 수 있어요. 1:1만 되는 건 RS-232C예요."],
+["net","Modbus 통신 방식에 대한 설명으로 옳은 것은?",["마스터가 요청하면 슬레이브가 응답하는 방식이다","모든 장치가 동시에 아무 때나 데이터를 보낸다","브로커를 거쳐 발행·구독한다","무선 전용 통신이다"],"Modbus는 마스터가 슬레이브 주소(국번)를 지정해 요청하고, 해당 슬레이브만 응답해요. 발행·구독은 MQTT 방식이에요."],
+["net","브로커를 중심으로 발행(Publish)·구독(Subscribe) 방식으로 동작하는 가벼운 IoT 통신 프로토콜은?",["MQTT","FTP","Modbus RTU","RS-232C"],"MQTT는 센서가 '토픽'에 데이터를 발행하면, 그 토픽을 구독한 쪽이 브로커를 통해 받아요. 데이터가 작아 IoT에 많이 써요."],
+["net","제조사나 운영체제에 관계없이 산업 장비끼리 데이터를 안전하게 주고받도록 만든 표준은?",["OPC UA","HTTP","SMTP","Bluetooth"],"OPC UA는 플랫폼에 독립적인 산업용 데이터 교환 표준이에요. 보안 기능도 들어 있어서 스마트공장에서 장비와 상위 시스템을 잇는 데 많이 써요."],
+["net","데이터 전송 중 생긴 오류를 검출할 뿐 아니라 정정까지 할 수 있는 코드는?",["해밍 코드","패리티 비트","체크섬","CRC"],"해밍 코드는 오류 위치까지 찾아서 고칠 수 있어요. 패리티·체크섬·CRC는 오류가 있는지 검출만 해요."],
+["net","무전기처럼 양쪽 모두 보낼 수 있지만 동시에는 한쪽만 보낼 수 있는 통신 방식은?",["반이중","전이중","단방향","병렬"],"반이중은 번갈아 가며 보내요. 전화처럼 동시에 주고받으면 전이중, TV 방송처럼 한쪽으로만 보내면 단방향이에요."],
+["net","저전력으로 동작하고 메시 네트워크를 만들 수 있어 센서 네트워크에 많이 쓰는 근거리 무선 통신은?",["지그비(ZigBee)","광통신","RS-422","이더넷"],"지그비는 IEEE 802.15.4 기반의 저전력 근거리 무선 통신이에요. 장치끼리 그물처럼 연결할 수 있어요."],
+["net","광케이블에서 빛을 보내 반사되어 돌아오는 신호로 손실과 끊어진 위치를 찾는 측정 장비는?",["OTDR","멀티미터","오실로스코프","메거(절연저항계)"],"OTDR(광 시간영역 반사계)은 광선로의 손실, 접속점, 단선 위치를 거리로 보여 줘요. 광통신 유지관리의 핵심 장비예요."],
+/* ── PLC·특수모듈 ── */
+["plc","PLC의 하드웨어 구성 요소가 아닌 것은?",["래더 다이어그램","CPU","입력부","전원부"],"래더 다이어그램은 PLC에 넣는 프로그램(소프트웨어)이에요. 하드웨어는 CPU, 메모리, 입력부, 출력부, 전원부로 이뤄져요."],
+["plc","PLC가 한 번 스캔할 때의 처리 순서로 옳은 것은?",["입력 읽기 → 프로그램 실행 → 출력 내보내기","프로그램 실행 → 입력 읽기 → 출력 내보내기","출력 내보내기 → 입력 읽기 → 프로그램 실행","입력 읽기 → 출력 내보내기 → 프로그램 실행"],"PLC는 입력 상태를 한꺼번에 읽고, 프로그램을 위에서 아래로 실행한 뒤, 결과를 출력으로 내보내요. 이걸 계속 반복하는 게 스캔이에요."],
+["plc","AC와 DC 부하에 모두 쓸 수 있지만, 접점이 기계적으로 움직여 수명이 짧고 응답이 느린 PLC 출력 방식은?",["릴레이 출력","트랜지스터 출력","트라이액 출력","SSR 출력"],"릴레이 출력은 진짜 접점이 붙었다 떨어져서 AC·DC 다 되지만, 자주 켜고 끄면 접점이 닳아요."],
+["plc","응답이 빠르고 수명이 길어 고속 펄스 출력에 쓰지만, DC 부하에만 쓸 수 있는 PLC 출력 방식은?",["트랜지스터 출력","릴레이 출력","트라이액 출력","접점 출력"],"트랜지스터 출력은 무접점이라 빠르고 오래가요. 스테핑·서보 모터에 펄스를 보낼 때도 써요. 단, DC 전용이에요."],
+["plc","AC 부하 전용으로 쓰는 무접점 PLC 출력 방식은?",["트라이액(SSR) 출력","트랜지스터 출력","릴레이 출력","포토커플러 출력"],"트라이액은 교류를 켜고 끄는 반도체 소자라 AC 전용 무접점 출력에 써요."],
+["plc","PLC 입력부에서 외부 회로와 내부 회로를 빛으로 신호를 전달해 전기적으로 절연하고 노이즈를 막는 소자는?",["포토커플러","다이오드","트라이액","릴레이"],"포토커플러는 LED 빛으로 신호만 넘겨서 바깥 전기가 PLC 안으로 바로 들어오지 않게 막아요."],
+["plc","온도·압력 센서의 4~20mA 같은 아날로그 신호를 PLC가 계산할 수 있는 디지털 값으로 바꾸는 모듈은?",["A/D 변환 모듈(아날로그 입력 모듈)","D/A 변환 모듈","고속 카운터 모듈","통신 모듈"],"A/D 모듈은 아날로그(연속 값)를 디지털 숫자로 바꿔요. 반대로 인버터 속도 지령처럼 디지털 값을 전압·전류로 내보내는 건 D/A 모듈이에요."],
+["plc","PLC가 계산한 값을 0~10V 같은 아날로그 신호로 내보내 인버터 속도 지령 등에 쓰는 모듈은?",["D/A 변환 모듈","A/D 변환 모듈","고속 카운터 모듈","위치결정 모듈"],"D/A 모듈은 디지털 값을 전압·전류 같은 아날로그 신호로 바꿔 내보내요."],
+["plc","엔코더에서 나오는 빠른 펄스를 일반 입력으로는 놓치기 때문에, 이를 정확히 세려고 쓰는 특수 모듈은?",["고속 카운터 모듈","A/D 변환 모듈","D/A 변환 모듈","전원 모듈"],"일반 입력은 스캔 시간 때문에 빠른 펄스를 놓칠 수 있어요. 고속 카운터 모듈은 스캔과 관계없이 펄스를 세요."],
+["plc","스테핑 모터나 서보 모터에 펄스를 보내 정해진 위치로 정확히 움직이게 하는 PLC 특수 모듈은?",["위치결정 모듈","A/D 변환 모듈","온도 제어 모듈","통신 모듈"],"위치결정 모듈은 목표 위치·속도에 맞춰 펄스 수와 주파수를 만들어 모터 드라이브로 보내요."],
+["plc","IEC 61131-3 PLC 언어 중 그래픽 언어인 것은?",["LD(래더 다이어그램)","IL(명령어 리스트)","ST(구조화 텍스트)","BASIC"],"IEC 61131-3의 그래픽 언어는 LD, FBD, SFC이고, 텍스트 언어는 IL, ST예요."],
+["plc","래더 회로에서 자기유지 회로를 쓰는 목적은?",["시작 버튼에서 손을 떼도 출력을 계속 유지하려고","두 출력이 동시에 켜지는 것을 막으려고","설정 시간 뒤에 출력을 켜려고","입력 횟수를 세려고"],"자기유지는 출력 자신의 a접점을 시작 버튼과 병렬로 넣어서, 버튼을 놓아도 계속 켜지게 해요. 정지 버튼(b접점)으로 끊어요."],
+["plc","모터 정회전과 역회전 출력이 동시에 켜지지 않도록 서로의 b접점을 넣어 주는 회로는?",["인터록 회로","자기유지 회로","타이머 회로","카운터 회로"],"인터록은 한쪽이 켜져 있으면 다른 쪽이 못 켜지게 막아요. 정역 동시 투입에 의한 단락 사고를 막는 안전 회로예요."],
+["plc","입력이 켜진 뒤 설정 시간이 지나야 출력이 켜지는 타이머는?",["온 딜레이 타이머(TON)","오프 딜레이 타이머(TOF)","업 카운터(CTU)","다운 카운터(CTD)"],"TON은 켜짐을 늦춰요. TOF는 입력이 꺼진 뒤에도 설정 시간 동안 출력을 유지해요."],
+/* ── 공기압 ── */
+["pn","공기압 시스템의 장점이 아닌 것은?",["큰 힘을 얻기 쉽다","과부하가 걸려도 안전하다","압축 공기를 탱크에 저장할 수 있다","화재·폭발 위험이 적다"],"공기압은 보통 0.5~0.7MPa 정도로 써서 큰 힘을 내기 어려워요. 큰 힘이 필요하면 유압을 써요."],
+["pn","공기압 실린더로 정밀한 속도·위치 제어가 어려운 가장 큰 이유는?",["공기가 압축성이 있기 때문이다","공기가 무겁기 때문이다","공기에 윤활성이 너무 많기 때문이다","공기가 전기를 통하기 때문이다"],"공기는 눌리면 부피가 줄어드는 압축성이 있어요. 그래서 부하가 바뀌면 속도가 흔들리고 중간 정지도 정확하지 않아요."],
+["pn","공기압 조정 유닛(FRL 유닛)의 구성으로 옳은 것은?",["필터 - 레귤레이터 - 루브리케이터","필터 - 체크 밸브 - 실린더","압축기 - 탱크 - 실린더","레귤레이터 - 솔레노이드 밸브 - 소음기"],"F(필터)로 먼지·수분을 거르고, R(레귤레이터)로 압력을 맞추고, L(루브리케이터)로 윤활유를 섞어요."],
+["pn","공기 압축기에서 나온 뜨거운 압축 공기를 식혀 수분을 응축시켜 없애는 장치는?",["애프터쿨러","루브리케이터","소음기","레귤레이터"],"애프터쿨러는 압축기 바로 뒤에서 공기를 식혀 수분을 물로 만들어 빼내요. 더 건조하게 하려면 에어 드라이어를 써요."],
+["pn","복동 실린더의 속도를 조절할 때 많이 쓰는 미터 아웃 방식에 대한 설명으로 옳은 것은?",["실린더에서 빠져나가는 배기 공기의 양을 조절한다","실린더로 들어가는 공기의 양만 조절한다","공급 압력을 높여 속도를 조절한다","전기 신호의 주파수로 속도를 조절한다"],"미터 아웃은 배기 쪽을 조여서 속도를 조절해요. 피스톤 앞뒤로 압력이 걸려 있어서 미터 인보다 움직임이 안정적이에요."],
+["pn","공기압으로 한쪽 방향만 움직이고 복귀는 내장 스프링 힘으로 하는 실린더는?",["단동 실린더","복동 실린더","로드리스 실린더","탠덤 실린더"],"단동 실린더는 공기 포트가 하나라 공기 소모가 적지만, 스프링 때문에 행정이 짧고 힘이 조금 줄어요."],
+["pn","'5/2way 밸브'에서 숫자의 뜻으로 옳은 것은?",["포트(연결구) 5개, 전환 위치 2개","전환 위치 5개, 포트 2개","사용 압력 5bar, 무게 2kg","솔레노이드 5개, 스프링 2개"],"앞 숫자는 포트 수, 뒤 숫자는 위치(방) 수예요. 5/2way는 복동 실린더를 앞뒤로 움직일 때 많이 써요."],
+["pn","실린더 행정 끝에서 피스톤이 부딪히는 충격을 줄이기 위해 실린더 안에 두는 기능은?",["쿠션","소음기","필터","체크 밸브"],"쿠션은 행정 끝에서 배기를 좁혀 피스톤 속도를 줄여요. 충격과 소음을 줄여 실린더 수명을 늘려요."],
+["pn","두 입력 포트 중 어느 한쪽에만 공기가 들어와도 출력이 나가는 OR 기능의 밸브는?",["셔틀 밸브","2압 밸브","체크 밸브","급속 배기 밸브"],"셔틀 밸브는 OR, 2압 밸브는 두 입력이 모두 있어야 출력이 나가는 AND 기능이에요."],
+["pn","두 입력 포트에 모두 공기가 들어와야 출력이 나가는 AND 기능의 밸브는?",["2압 밸브","셔틀 밸브","체크 밸브","릴리프 밸브"],"2압 밸브는 양손 조작 안전 회로처럼 두 조건이 다 맞아야 움직이게 할 때 써요."],
+["pn","공기를 한 방향으로만 흐르게 하고 반대 방향은 막는 밸브는?",["체크 밸브","셔틀 밸브","감압 밸브","5/2way 밸브"],"체크 밸브는 역류 방지 밸브예요. 속도 제어 밸브 안에도 체크 밸브가 들어 있어요."],
+["pn","압축 공기를 노즐로 빠르게 흘려 진공을 만들고, 흡착 패드로 물체를 잡게 하는 장치는?",["진공 이젝터","애프터쿨러","루브리케이터","레귤레이터"],"진공 이젝터는 빠른 공기 흐름이 주변 공기를 끌고 가는 원리로 진공을 만들어요. 로봇 흡착 그리퍼에 많이 써요."],
+["pn","온도가 일정할 때 기체의 압력과 부피는 서로 반비례한다는 법칙은?",["보일의 법칙","샤를의 법칙","파스칼의 원리","베르누이의 정리"],"보일의 법칙이에요. 샤를의 법칙은 압력이 일정할 때 부피가 절대온도에 비례한다는 거예요."],
+["pn","전기 신호로 전자석을 움직여 공기의 흐름 방향을 바꾸는 밸브는?",["솔레노이드 밸브","체크 밸브","셔틀 밸브","수동 밸브"],"솔레노이드 밸브는 PLC 출력으로 코일에 전기를 넣으면 밸브가 바뀌어요. 전기와 공압을 잇는 장치예요."],
+/* ── 센서 ── */
+["sen","금속 물체만 감지하고 플라스틱·나무는 감지하지 못하는 근접 센서는?",["유도형 근접 센서","정전용량형 근접 센서","투과형 광전 센서","초음파 센서"],"유도형은 고주파 자기장 속에 금속이 들어올 때 생기는 와전류를 감지해요. 그래서 금속만 감지해요."],
+["sen","금속뿐 아니라 플라스틱, 물, 나무 같은 비금속도 감지할 수 있는 근접 센서는?",["정전용량형 근접 센서","유도형 근접 센서","리드 스위치","홀 센서"],"정전용량형은 물체가 다가올 때 바뀌는 정전용량을 감지해서 대부분의 물체를 감지해요. 통 안 액체 높이 감지에도 써요."],
+["sen","투광기와 수광기를 마주 보게 설치하고, 물체가 빛을 가리면 감지하는 광전 센서는?",["투과형","확산 반사형","회귀 반사형","한정 거리 반사형"],"투과형은 감지 거리가 가장 길고 확실해요. 대신 투광기·수광기 두 개를 따로 설치해야 해요."],
+["sen","자기장을 가하면 전압이 생기는 현상을 이용한 센서는?",["홀 센서","서미스터","CdS 셀","스트레인 게이지"],"홀 효과를 이용한 홀 센서는 자석의 위치나 모터 회전을 감지할 때 써요."],
+["sen","NTC 서미스터의 특징으로 옳은 것은?",["온도가 올라가면 저항이 작아진다","온도가 올라가면 저항이 커진다","빛이 세지면 저항이 작아진다","압력이 커지면 전압이 생긴다"],"NTC는 부(-)의 온도 계수라서 온도가 오르면 저항이 줄어요. PTC는 반대로 저항이 커져요."],
+["sen","서로 다른 두 금속을 접합하고 두 접점의 온도 차로 생기는 기전력을 이용해 온도를 재는 센서는?",["열전대","서미스터","측온 저항체(RTD)","CdS 셀"],"열전대는 제베크 효과를 이용해요. 아주 높은 온도까지 잴 수 있어서 용광로·가열로에 많이 써요."],
+["sen","스트레인 게이지를 붙여 무게나 힘을 전기 신호로 바꾸는 센서는?",["로드셀","엔코더","리밋 스위치","포토 센서"],"로드셀은 힘을 받으면 미세하게 변형되고, 붙어 있는 스트레인 게이지의 저항이 바뀌어요. 전자저울에 들어 있어요."],
+["sen","전원이 꺼졌다 켜져도 현재 회전 위치를 바로 알 수 있는 엔코더는?",["앱솔루트 엔코더","인크리멘탈 엔코더","광전 센서","리밋 스위치"],"앱솔루트 엔코더는 각 위치마다 고유한 코드가 있어서 절대 위치를 알아요. 인크리멘탈은 펄스를 세기 때문에 전원이 꺼지면 원점을 다시 잡아야 해요."],
+["sen","NPN 출력형 센서에 대한 설명으로 옳은 것은?",["물체를 감지하면 출력선이 0V(COM) 쪽으로 연결된다","물체를 감지하면 출력선이 +24V 쪽으로 연결된다","AC 전원에서만 쓸 수 있다","출력선이 없고 전원선만 있다"],"NPN은 감지하면 출력이 0V로 떨어지면서 전류를 빨아들여요(싱크). PNP는 감지하면 +24V를 내보내요(소스)."],
+["sen","물체가 레버나 롤러를 직접 눌러야 접점이 동작하는 기계식 스위치는?",["리밋 스위치","근접 센서","광전 센서","초음파 센서"],"리밋 스위치는 접촉식이라 확실하지만 닳고, 근접·광전 센서는 비접촉식이라 수명이 길어요."],
+/* ── 모터·구동기 ── */
+["mot","직류(DC) 전동기의 속도 제어 방법이 아닌 것은?",["주파수 제어","전압 제어","계자 제어","저항 제어"],"주파수 제어는 교류 유도전동기를 인버터로 제어하는 방법이에요. DC 전동기는 전압·계자·저항으로 속도를 바꿔요."],
+["mot","3상 유도전동기의 회전 방향을 반대로 바꾸는 방법은?",["전원 3선 중 2선을 서로 바꿔 연결한다","전원 3선을 모두 바꿔 연결한다","전압을 높인다","주파수를 낮춘다"],"아무 두 상만 바꾸면 회전 자기장 방향이 반대가 돼요. 세 선을 차례로 다 바꾸면 방향이 그대로예요."],
+["mot","인버터로 3상 유도전동기의 속도를 바꿀 때 함께 바꾸는 것은?",["주파수와 전압","극수와 저항","전류와 극수","저항과 콘덴서"],"인버터는 주파수를 바꿔 속도를 조절하고, 자속이 일정하도록 전압도 같이 바꿔요(V/f 제어)."],
+["mot","유도전동기의 동기 속도와 극수·주파수의 관계로 옳은 것은?",["주파수에 비례하고 극수에 반비례한다","주파수에 반비례하고 극수에 비례한다","주파수와 극수에 모두 비례한다","주파수와 극수에 관계없다"],"동기 속도 Ns = 120f/P 라서 주파수(f)가 크면 빨라지고, 극수(P)가 많으면 느려져요."],
+["mot","입력한 펄스 수에 비례해 정해진 각도만큼 돌고, 엔코더 없이(개루프) 위치 제어를 할 수 있는 모터는?",["스테핑 모터","유도 전동기","직류 직권 전동기","동기 발전기"],"스테핑 모터는 펄스 하나에 정해진 스텝 각만큼 돌아요. 다만 부하가 너무 크면 탈조(스텝 놓침)가 생길 수 있어요."],
+["mot","엔코더로 실제 위치·속도를 되돌려 받아(폐루프) 정밀하게 제어하는 모터는?",["서보 모터","스테핑 모터(개루프)","3상 유도 전동기","셰이딩 코일형 모터"],"서보 모터는 지령과 실제 값의 차이를 계속 줄이는 피드백 제어를 해서 빠르고 정밀해요."],
+["mot","유도전동기에서 슬립(slip)이란?",["동기 속도와 실제 회전자 속도의 차이를 동기 속도로 나눈 비율","전원 전압과 전류의 비율","회전자 저항과 고정자 저항의 비율","극수와 주파수의 곱"],"회전자는 회전 자기장보다 조금 느리게 돌아요. 그 차이의 비율이 슬립이고, 슬립이 있어야 토크가 생겨요."],
+["mot","큰 기동 전류를 줄이려고 처음엔 Y결선으로 돌리다가 속도가 오르면 Δ결선으로 바꾸는 기동법은?",["Y-Δ 기동","직입 기동","리액터 기동","역상 제동"],"Y결선은 각 권선에 걸리는 전압이 1/√3이라 기동 전류와 토크가 1/3로 줄어요."],
+["mot","브러시 대신 전자 회로로 전류 방향을 바꿔 마모가 적고 수명이 긴 모터는?",["BLDC 모터","직류 직권 전동기","유니버설 모터","직류 분권 전동기"],"BLDC(브러시리스 DC) 모터는 홀 센서 등으로 회전자 위치를 보고 전자적으로 정류해요."],
+["mot","모터 축에 감속기를 달았을 때 나타나는 변화로 옳은 것은?",["출력 속도는 줄고 토크는 커진다","출력 속도와 토크가 모두 커진다","출력 속도는 커지고 토크는 줄어든다","속도와 토크 모두 변하지 않는다"],"감속비만큼 속도가 줄고, 그만큼 토크(돌리는 힘)는 커져요(효율 손실 제외)."],
+/* ── 감시제어(SCADA) ── */
+["scada","SCADA에 대한 설명으로 옳은 것은?",["멀리 떨어진 설비의 데이터를 모아 감시하고 제어하는 시스템","전동기의 회전 속도를 바꾸는 장치","공기압을 저장하는 탱크","물체의 무게를 재는 센서"],"SCADA(Supervisory Control And Data Acquisition)는 감시 제어 및 데이터 수집 시스템이에요. 여러 PLC·RTU의 데이터를 한 화면에서 보고 제어해요."],
+["scada","원격 현장에 설치되어 센서 데이터를 모으고 중앙 SCADA로 보내는 장치는?",["RTU","HMI","ERP","OTDR"],"RTU(Remote Terminal Unit)는 원격 단말 장치예요. 상수도·전력 설비처럼 넓게 퍼진 현장에서 써요."],
+["scada","공정 값이 정해진 범위를 벗어났을 때 운영자에게 화면·소리로 알리는 SCADA 기능은?",["알람","트렌드","레시피","리포트"],"알람은 이상 상황을 즉시 알려 줘요. 발생 시간, 확인(ACK) 여부, 복귀 시간까지 기록해요."],
+["scada","온도·압력 같은 공정 값이 시간에 따라 어떻게 변했는지 그래프로 보여 주는 기능은?",["트렌드","알람","인터록","레시피"],"트렌드 화면으로 지금 값과 과거 흐름을 같이 볼 수 있어서 이상 징후를 미리 찾을 때 좋아요."],
+["scada","공정 데이터를 시간 정보와 함께 오랫동안 저장해 두는 전용 데이터베이스는?",["히스토리안(Historian)","레시피","태그","알람 배너"],"히스토리안은 많은 데이터를 빠르게 저장하고 꺼내 볼 수 있게 만든 시계열 데이터베이스예요."],
+["scada","생산 현장의 작업 지시, 생산 실적, 품질 이력을 실시간으로 관리하는 시스템은?",["MES","ERP","PLC","RTU"],"MES(제조 실행 시스템)는 계획(ERP)과 현장 제어(PLC·SCADA) 사이에서 생산을 실제로 운영·관리해요."],
+["scada","회사 전체의 회계, 구매, 인사, 재고 같은 자원을 통합 관리하는 시스템은?",["ERP","MES","SCADA","HMI"],"ERP(전사적 자원 관리)는 공장 계층 구조에서 가장 위쪽 경영 계층의 시스템이에요."],
+["scada","SCADA·HMI에서 PLC의 특정 메모리 주소(디바이스) 값에 이름을 붙여 연결해 둔 데이터 항목을 무엇이라 하는가?",["태그","레시피","트렌드","스크립트"],"태그는 예를 들어 '탱크1_온도 = D100'처럼 PLC 주소에 이름을 붙인 거예요. 화면 오브젝트는 태그를 통해 PLC 값을 읽고 써요."],
+/* ── 데이터 수집 ── */
+["daq","아날로그 신호를 디지털로 바꿀 때 원래 신호를 복원하려면 샘플링 주파수는 신호의 최고 주파수의 몇 배 이상이어야 하는가?",["2배 이상","절반 이하","같은 값","10분의 1"],"나이퀴스트 샘플링 정리예요. 이보다 느리게 샘플링하면 신호가 엉뚱한 낮은 주파수로 보이는 에일리어싱이 생겨요."],
+["daq","A/D 변환기의 분해능(비트 수)이 커질 때 나타나는 결과는?",["더 작은 신호 변화까지 구분할 수 있다","측정할 수 있는 신호 종류가 줄어든다","노이즈가 무조건 사라진다","변환 속도가 무조건 빨라진다"],"비트 수가 늘면 같은 범위를 더 잘게 나눠요. 예를 들어 12비트는 4096단계, 16비트는 65536단계로 나눠요."],
+["daq","센서 신호로 4~20mA 전류 신호를 많이 쓰는 이유로 옳은 것은?",["거리가 멀어도 전압 강하 영향이 적고, 0mA면 단선을 알아챌 수 있다","전압 신호보다 노이즈에 약하다","전원 없이 동작한다","무선으로 전송된다"],"전류 신호는 배선 저항의 영향을 적게 받아요. 최솟값이 0이 아니라 4mA라서 0mA가 나오면 단선이나 고장이라고 판단할 수 있어요."],
+["daq","데이터를 멀리 있는 클라우드로 모두 보내지 않고, 현장 가까이에서 바로 처리해 응답 지연을 줄이는 방식은?",["엣지 컴퓨팅","클라우드 백업","메인프레임","오프라인 수기 기록"],"엣지 컴퓨팅은 설비 근처에서 데이터를 먼저 처리해요. 빠른 판단이 필요하거나 통신량을 줄이고 싶을 때 써요."],
+["daq","센서 배선에 들어오는 전기적 노이즈를 줄이는 방법으로 알맞은 것은?",["차폐(실드) 케이블을 쓰고 실드를 접지한다","신호선을 동력선과 한 덕트에 묶는다","배선을 최대한 길게 한다","접지를 모두 떼어 낸다"],"실드 케이블과 올바른 접지, 동력선과의 분리 배선이 노이즈를 줄이는 기본이에요."],
+["daq","수집한 데이터 중 빠진 값(결측치)이나 튀는 값(이상치)을 처리하고 형식을 맞추는 단계는?",["데이터 전처리","데이터 암호화","데이터 압축","데이터 백업"],"전처리를 해야 분석·AI 학습 결과가 정확해져요. 수집 → 전처리 → 저장 → 분석 순서로 생각하면 쉬워요."],
+["daq","행과 열로 된 표 형태로 정리되어 데이터베이스에 바로 넣을 수 있는 데이터는?",["정형 데이터","비정형 데이터","반정형 데이터","아날로그 데이터"],"정형 데이터는 표처럼 정해진 형식이 있어요. 사진·영상·소리는 비정형, JSON·XML은 반정형이에요."],
+["daq","빅데이터의 특징인 3V에 해당하지 않는 것은?",["Voltage(전압)","Volume(크기)","Velocity(속도)","Variety(다양성)"],"3V는 Volume, Velocity, Variety예요. 여기에 Veracity(정확성), Value(가치)를 더해 5V라고도 해요."],
+/* ── 데이터 인터페이스 ── */
+["dif","SQL에서 테이블의 데이터를 조회할 때 쓰는 명령어는?",["SELECT","INSERT","UPDATE","DELETE"],"SELECT로 원하는 열과 조건(WHERE)을 골라 데이터를 읽어요. INSERT는 추가, UPDATE는 수정, DELETE는 삭제예요."],
+["dif","SQL 명령어 중 데이터 정의어(DDL)가 아닌 것은?",["SELECT","CREATE","ALTER","DROP"],"DDL은 테이블 구조를 만들고(CREATE) 바꾸고(ALTER) 없애는(DROP) 명령이에요. SELECT는 데이터 조작어(DML)예요."],
+["dif","테이블에서 각 행을 유일하게 구분하고, 비어 있으면(NULL) 안 되는 키는?",["기본키(Primary Key)","외래키(Foreign Key)","후보키 중 남은 키","정렬키"],"기본키는 학번처럼 겹치지 않고 반드시 있어야 하는 값이에요."],
+["dif","다른 테이블의 기본키를 참조해서 두 테이블을 연결하는 키는?",["외래키(Foreign Key)","기본키(Primary Key)","대체키","슈퍼키"],"외래키로 '생산실적' 테이블이 '설비' 테이블의 설비번호를 가리키게 하는 식으로 테이블을 연결해요."],
+["dif","테이블 구조는 남기고 조건에 맞는 행(데이터)만 지우는 SQL 명령어는?",["DELETE","DROP","ALTER","CREATE"],"DELETE는 데이터 행을 지워요. DROP은 테이블 자체를 통째로 없애요."],
+["dif","{\"설비\":\"CNC1\", \"온도\":42.5}처럼 '키:값' 쌍으로 데이터를 표현하는 형식은?",["JSON","CSV","HTML","BMP"],"JSON은 사람도 읽기 쉽고 프로그램끼리 주고받기 좋아서 웹 API에서 가장 많이 써요."],
+["dif","서로 다른 프로그램이 데이터를 주고받을 수 있도록 정해 둔 호출 규칙(인터페이스)을 무엇이라 하는가?",["API","DBMS","OS","BIOS"],"API(Application Programming Interface)는 '이렇게 요청하면 이렇게 답해 줄게'라는 약속이에요."],
+["dif","REST API에서 서버의 데이터를 조회(읽기)할 때 쓰는 HTTP 메서드는?",["GET","POST","PUT","DELETE"],"GET은 조회, POST는 생성, PUT은 수정, DELETE는 삭제에 써요."],
+/* ── 로봇 인터페이스 ── */
+["rob","사람 팔처럼 여러 회전 관절로 이루어져 보통 6축을 가지며 용접·조립 등 다양한 작업에 쓰는 로봇은?",["수직 다관절 로봇","직교 좌표 로봇","스카라 로봇","델타(병렬) 로봇"],"수직 다관절 로봇은 자유도가 높아서 공간의 거의 모든 위치·자세로 공구를 움직일 수 있어요."],
+["rob","수평 방향으로 회전하는 관절을 가져 평면 위 빠른 조립·삽입 작업에 많이 쓰는 로봇은?",["스카라 로봇","수직 다관절 로봇","직교 좌표 로봇","원통 좌표 로봇"],"스카라(SCARA)는 수평 방향은 유연하고 수직 방향은 단단해서 부품을 꽂는 조립에 강해요."],
+["rob","X, Y, Z 세 축이 직선으로만 움직이는 로봇은?",["직교 좌표 로봇","수직 다관절 로봇","스카라 로봇","극좌표 로봇"],"직교 좌표(갠트리) 로봇은 구조가 단순하고 정밀도가 높아요. 대신 차지하는 공간이 커요."],
+["rob","로봇에 위치를 직접 가르치고(티칭) 프로그램을 만들거나 수동으로 조작할 때 쓰는 휴대용 장치는?",["티칭 펜던트","PLC","인버터","HMI 서버"],"티칭 펜던트에는 조그 버튼, 화면, 비상정지 스위치, 인에이블 스위치가 있어요."],
+["rob","로봇 팔 끝에 달아 실제 작업을 하는 그리퍼, 흡착 패드, 용접 토치 등을 통틀어 부르는 말은?",["엔드 이펙터","감속기","컨트롤러","베이스"],"엔드 이펙터는 로봇의 '손'이에요. 작업에 맞게 바꿔 달아요."],
+["rob","힘·충돌 감지 기능이 있어 안전 펜스 없이도 사람과 같은 공간에서 함께 일할 수 있도록 만든 로봇은?",["협동 로봇","갠트리 로봇","델타 로봇","무인 운반차(AGV)"],"협동 로봇(코봇)은 사람과 부딪히면 멈추거나 힘을 제한해요. 단, 위험성 평가를 거쳐 써야 해요."],
+["rob","로봇 공구 끝이 시작점에서 목표점까지 곧은 선을 따라 움직이게 하는 이동 방식은?",["직선 보간","관절 보간","원호 보간","PTP(점 대 점) 이동"],"직선 보간(LIN)은 경로가 중요할 때 써요. 관절 보간(PTP)은 각 관절이 따로 움직여서 빠르지만 경로가 곡선이 돼요."],
+["rob","로봇 프로그램에서 위치·자세의 기준이 되는 공구 끝의 작업 기준점을 무엇이라 하는가?",["TCP(Tool Center Point)","TCP/IP","PCB","CPU"],"TCP는 그리퍼 끝이나 용접 토치 끝처럼 실제 작업하는 점이에요. 공구를 바꾸면 TCP 값도 다시 설정해야 해요."],
+/* ── HMI ── */
+["hmi","HMI(Human Machine Interface)에 대한 설명으로 옳은 것은?",["작업자가 설비 상태를 보고 조작할 수 있게 해 주는 화면 장치","전동기의 속도를 바꾸는 장치","PLC의 전원을 공급하는 장치","압축 공기를 만드는 장치"],"HMI는 터치패널 같은 장치로, PLC 데이터를 화면에 보여 주고 작업자 입력을 PLC로 보내요."],
+["hmi","HMI의 램프 오브젝트를 PLC와 연결할 때 주로 연결하는 데이터는?",["비트(ON/OFF) 디바이스","워드(숫자) 디바이스만","문자열 파일","이미지 파일"],"램프는 비트 값이 1이면 켜진 색, 0이면 꺼진 색으로 보여 줘요. 숫자 표시기는 워드 디바이스를 연결해요."],
+["hmi","HMI 스위치 중 누르고 있는 동안에만 ON이 되고, 손을 떼면 OFF가 되는 동작은?",["모멘터리","얼터네이트","세트","리셋"],"모멘터리는 누르는 동안만 ON이에요. 조그 운전 버튼에 많이 써요."],
+["hmi","HMI 스위치 중 한 번 누르면 ON, 다시 누르면 OFF로 상태가 바뀌는 동작은?",["얼터네이트(토글)","모멘터리","리셋","워드 설정"],"얼터네이트는 누를 때마다 상태가 반전돼요. 자동/수동 선택 같은 데 써요."],
+["hmi","작업자가 HMI 화면에서 생산 목표 수량 같은 숫자를 입력해 PLC로 보내려고 쓰는 오브젝트는?",["숫자 입력(데이터 입력) 오브젝트","램프 오브젝트","비트 스위치 오브젝트","도형 오브젝트"],"숫자 입력 오브젝트에 워드 디바이스(예: D200)를 연결하면, 입력한 값이 PLC 메모리에 써져요."],
+["hmi","HMI 화면을 설계할 때의 원칙으로 알맞지 않은 것은?",["화면마다 같은 의미의 색을 다르게 쓴다","알람·비상 상태는 눈에 잘 띄게 표시한다","자주 쓰는 버튼은 누르기 쉬운 위치에 둔다","글자와 표시를 한눈에 읽을 수 있게 한다"],"색의 의미(예: 빨강=정지·이상, 초록=운전)는 모든 화면에서 똑같아야 작업자가 헷갈리지 않아요."],
+["hmi","HMI에서 작업자, 관리자 등 사용자별로 조작할 수 있는 화면이나 버튼을 제한하는 기능은?",["보안 레벨(사용자 권한) 설정","트렌드","레시피","화면 캡처"],"보안 레벨을 두면 설정값 변경처럼 중요한 조작은 권한 있는 사람만 할 수 있어요."],
+["hmi","HMI와 PLC를 시리얼로 연결했는데 통신이 안 될 때 먼저 확인할 항목으로 거리가 먼 것은?",["HMI 화면의 배경색","통신 속도와 데이터 형식 설정","PLC 국번(스테이션 번호)","통신 케이블 연결과 결선"],"통신 속도·패리티·데이터 비트·국번 설정과 케이블 결선이 서로 맞아야 통신돼요. 배경색은 통신과 관계없어요."],
+/* ── 안전관리 ── */
+["safe","산업안전보건법의 안전보건표지 중 '금지 표지'에 쓰는 색은?",["빨간색","노란색","파란색","녹색"],"금지 표지는 빨간색 원과 사선이에요. 경고는 노란색, 지시는 파란색, 안내는 녹색이에요."],
+["safe","보안경 착용, 안전모 착용처럼 반드시 해야 할 행동을 알려 주는 '지시 표지'의 바탕색은?",["파란색","빨간색","노란색","녹색"],"지시 표지는 파란색 원 바탕에 흰색 그림이에요."],
+["safe","비상구, 응급구호 위치를 알려 주는 '안내 표지'에 주로 쓰는 색은?",["녹색","빨간색","노란색","보라색"],"안내 표지는 녹색 바탕이에요. 비상구 표시등도 녹색이에요."],
+["safe","설비의 비상정지 스위치에 대한 설명으로 옳은 것은?",["빨간색 버섯 모양이며, 누르면 잠기고 b접점을 끊어 설비를 멈춘다","초록색이며 누르면 설비가 시작된다","누르는 동안만 정지하고 떼면 바로 다시 움직인다","a접점을 써서 누르면 회로가 연결된다"],"비상정지는 눈에 잘 띄는 빨간 버섯형이고, 누르면 잠겨서 일부러 풀기 전에는 재가동되지 않아요. 선이 끊겨도 안전하게 멈추도록 b접점을 써요."],
+["safe","설비를 정비할 때 에너지원(전기·공압 등)을 차단하고 잠금장치와 표지를 달아 다른 사람이 켜지 못하게 하는 절차는?",["LOTO(잠금·표지)","5S 활동","TPM","FMEA"],"LOTO(Lock Out, Tag Out)는 정비 중 누군가 실수로 전원을 넣는 사고를 막아요."],
+["safe","빛의 막을 만들어 사람의 손이나 몸이 위험 구역에 들어가 빛이 가려지면 기계를 멈추게 하는 안전장치는?",["라이트 커튼","리밋 스위치","레귤레이터","감속기"],"라이트 커튼은 프레스나 로봇 셀 입구 같은 곳에 설치해서 사람이 들어가면 바로 정지 신호를 보내요."],
+/* ── 전기전자 조립 ── */
+["ee","옴의 법칙에 대한 설명으로 옳은 것은?",["전류는 전압에 비례하고 저항에 반비례한다","전류는 전압에 반비례하고 저항에 비례한다","전압은 전류와 관계없다","저항은 전압에 비례해 항상 커진다"],"I = V/R 이에요. 전압을 높이면 전류가 늘고, 저항을 키우면 전류가 줄어요."],
+["ee","저항을 직렬로 연결했을 때 모든 저항에서 같은 값은?",["전류","전압","소비 전력","저항값"],"직렬은 길이 하나라서 같은 전류가 흘러요. 병렬로 연결하면 각 저항에 걸리는 전압이 같아요."],
+["ee","멀티미터로 회로에 흐르는 전류를 잴 때 연결 방법으로 옳은 것은?",["회로를 끊고 측정기를 직렬로 넣는다","측정할 부품 양 끝에 병렬로 댄다","전원을 끈 상태에서 저항 모드로 잰다","측정기 한쪽만 회로에 댄다"],"전류는 측정기를 통과해야 하니까 직렬로 넣어요. 전압은 병렬로 대서 재요."],
+["ee","한쪽 방향으로만 전류를 흐르게 하는 소자는?",["다이오드","저항","콘덴서","코일"],"다이오드는 애노드(+)에서 캐소드(-) 방향으로만 전류가 흘러요. 교류를 직류로 바꾸는 정류 회로에 써요."],
+["ee","잘못된 납땜(냉납)의 특징으로 옳은 것은?",["표면이 거칠고 광택이 없으며 접촉 불량이 생기기 쉽다","표면이 매끄럽고 원뿔 모양으로 잘 퍼져 있다","납이 패드 전체를 고르게 덮고 있다","인두를 충분히 대서 생긴다"],"냉납은 온도가 부족하거나 굳는 동안 흔들려서 생겨요. 좋은 납땜은 광택이 있고 매끈한 원뿔(산) 모양이에요."],
+["ee","회로에 정해진 값보다 큰 전류가 흐르면 녹아서 회로를 끊어 보호하는 부품은?",["퓨즈","콘덴서","트랜지스터","가변 저항"],"퓨즈는 과전류로부터 회로와 부품을 지켜요. 끊어지면 원인을 찾아 고친 뒤 같은 정격으로 바꿔요."]
+];
+
+/* ===== 2027 기능사 시험 일정 ===== */
+/* 출처: 한국산업인력공단 2027년 국가기술자격 정기시험 시행계획(기능사). 날짜는 [시작,끝] (끝이 없으면 하루) */
+const EXS_Y=2027;
+const EXS=[
+ {r:"제1회",w:{ap:["01-05","01-08"],ex:["01-19","01-23"],re:["01-29"]},p:{ap:["02-02","02-05"],ex:["03-13","03-31"],re:["04-09","04-16"]}},
+ {r:"제2회",w:{ap:["03-15","03-19"],ex:["04-03","04-08"],re:["04-21"],note:"3.18(목) 제외"},p:{ap:["04-26","04-29"],ex:["05-29","06-13"],re:["06-25","07-02"]}},
+ {r:"특성화고 등",sp:1,w:null,p:{ap:["05-10","05-14"],ex:["06-12","06-23"],re:["07-09","07-16"],note:"공휴일 제외"},desc:"산업수요 맞춤형 고등학교·특성화고 등 필기시험 면제자 검정 (일반 필기시험 면제자는 응시 못 해요)"},
+ {r:"제3회",w:{ap:["06-07","06-10"],ex:["06-26","06-30"],re:["07-07"]},p:{ap:["07-26","07-29"],ex:["08-28","09-17"],re:["09-24","09-30"]}},
+ {r:"제4회",w:{ap:["08-23","08-26"],ex:["09-21","09-25"],re:["09-30"]},p:{ap:["10-05","10-08"],ex:["11-27","12-15"],re:["12-24","12-31"]}}];
+const exsD=s=>new Date(`${EXS_Y}-${s}T00:00:00+09:00`);
+const exsF=s=>{const d=exsD(s);return`${d.getMonth()+1}.${d.getDate()}(${"일월화수목금토"[d.getDay()]})`};
+const exsR=(a,two)=>!a?"":a.length===1?exsF(a[0]):two?`1차 ${exsF(a[0])} · 2차 ${exsF(a[1])}`:`${exsF(a[0])} ~ ${exsF(a[1])}`;
+function exsToday(){const n=new Date(Date.now()+9*36e5);return new Date(`${n.toISOString().slice(0,10)}T00:00:00+09:00`)}
+/* 다가오는 일정 하나: 원서접수·시험 기준 (오늘 진행 중이면 '진행 중') */
+function exsNext(){const t=exsToday(),L=[];
+ EXS.forEach((x,i)=>[["w","필기"],["p","실기"]].forEach(([k,kn])=>{const v=x[k];if(!v)return;[["ap","원서접수"],["ex","시험"]].forEach(([e,en])=>{const a=exsD(v[e][0]),b=exsD(v[e][v[e].length-1]);L.push({i,a,b,txt:`${x.sp?"특성화고 등 ":x.r+" "}${kn} ${en}`,rng:exsR(v[e])})})}));
+ L.sort((p,q)=>p.a-q.a);const cur=L.find(e=>e.a<=t&&t<=e.b);if(cur)return{...cur,now:true};const nx=L.find(e=>e.a>t);return nx?{...nx,dd:Math.round((nx.a-t)/864e5)}:null}
+function exsHTML(){const nx=exsNext(),open=nx?nx.i:-1;
+ const row=(lab,v,k)=>v?`<div class="exr"><span>${lab}</span><b>${exsR(v[k],k==="re"&&v[k].length===2)}${k==="ap"&&v.note?` <small>(${v.note})</small>`:""}</b></div>`:"";
+ const half=(nm,v)=>v?`<div class="exh"><h4>${nm}</h4>${row("원서접수",v,"ap")}${row("시험",v,"ex")}${row("합격 발표",v,"re")}</div>`:`<div class="exh exno"><h4>${nm}</h4><p>이 회차는 필기 없이<br>실기만 봐요</p></div>`;
+ return`<div class="exhd"><h2 id="exsh">${EXS_Y} 기능사 시험 일정</h2>${nx?`<span class="exnx">${nx.now?"지금 진행 중":`D-${nx.dd}`}</span>`:""}</div>
+ ${nx?`<p class="exnext">${nx.now?"🟢":"📅"} <b>${nx.txt}</b> ${nx.rng}${nx.now?" · 진행 중이에요":""}</p>`:""}
+ <div class="exlist">${EXS.map((x,i)=>`<details class="exd${x.sp?" exsp":""}"${i===open?" open":""}><summary><b>${x.r}</b><span>필기 ${x.w?exsF(x.w.ex[0]):"없음"} · 실기 ${exsF(x.p.ex[0])}~</span></summary>
+  ${x.desc?`<p class="exdesc">${x.desc}</p>`:""}<div class="exgrid">${half("필기",x.w)}${half("실기",x.p)}</div></details>`).join("")}</div>
+ <p class="exft">원서접수는 첫날 10:00부터 마지막 날 18:00까지예요. 큐넷은 ${EXS_Y}.10.8(금) 18:00 ~ 10.18(월) 09:00 동안 시스템 교체로 접수·발급이 멈춰요. 정확한 일정은 <a href="https://www.q-net.or.kr" target="_blank" rel="noopener">큐넷</a>에서 꼭 다시 확인해 주세요.</p>`}
+const EXS_CSS=`.exs{display:flex;flex-direction:column;gap:10px}
+.exbn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:9px 12px;font-size:13.5px;min-height:44px;color:var(--fg);cursor:pointer}
+.exbn .t{flex:1;min-width:0;line-height:1.4}.exbn .t b{font-weight:700}
+.exbn .d{font:700 13px var(--mono,monospace);background:var(--accent);color:var(--accent-fg);border-radius:8px;padding:2px 8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.exbn .g{color:var(--muted);font-size:18px}
+.exhd{display:flex;align-items:center;gap:8px}.exhd h2{margin:0;flex:1}
+.exnx{font:700 13px var(--mono,monospace);background:var(--accent);color:var(--accent-fg);border-radius:8px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.exnext{margin:0;font-size:14px;background:var(--bg);border-radius:12px;padding:9px 12px}
+.exlist{display:flex;flex-direction:column;gap:6px}
+.exd{border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.exd summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:center;padding:10px 12px;min-height:44px}
+.exd summary::-webkit-details-marker{display:none}
+.exd summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .15s}.exd[open] summary::after{transform:rotate(180deg)}
+.exd summary b{font-size:15px;white-space:nowrap}.exd summary span{font-size:12.5px;color:var(--muted)}
+.exd[open]{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.exsp summary b{color:var(--muted)}
+.exdesc{margin:0 12px 8px;font-size:12.5px;color:var(--muted)}
+.exgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px}
+.exh{background:var(--bg);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.exh h4{margin:0;font-size:13px;color:var(--accent)}
+.exr{display:flex;flex-direction:column;font-size:13px;line-height:1.35}.exr span{font-size:11.5px;color:var(--muted)}.exr b{font-weight:600}.exr small{font-weight:400;color:var(--muted)}
+.exno{justify-content:center}.exno p{margin:0;font-size:12.5px;color:var(--muted)}
+.exft{margin:0;font-size:12px;color:var(--muted);line-height:1.5}.exft a{color:var(--accent)}
+@media (max-width:360px){.exgrid{grid-template-columns:1fr}}`;
+/* 맨 위 카드에 띄우는 한 줄 알림 (누르면 아래 일정표로 내려가요) */
+function exsBanner(){const nx=exsNext();if(!nx)return"";return`<button class="exbn" type="button" onclick="exsGo()"><span>${nx.now?"🟢":"📅"}</span><span class="t"><b>${nx.txt}</b> ${nx.now?"진행 중":nx.rng}</span><span class="d">${nx.now?"지금":"D-"+nx.dd}</span><span class="g" aria-hidden="true">›</span></button>`}
+function exsGo(){const e=document.querySelector(".exs");if(!e)return;e.scrollIntoView({behavior:"smooth",block:"start"});const d=e.querySelector("details[open]")||e.querySelector("details");if(d)d.open=true}
+/* 실고 첫 화면에 넣기 (필고는 자기 화면에서 exsHTML()을 직접 써요) */
+function siExsCard(){if(typeof document==="undefined"||!document.getElementById("about")||document.getElementById("exs")||typeof CERTS==="undefined")return;
+ const s=document.createElement("section");s.className="panel exs";s.id="exs";s.setAttribute("aria-labelledby","exsh");s.innerHTML=exsHTML();
+ document.getElementById("about").after(s);exsOrder();
+ const h=document.querySelector(".hero"),sl=h&&h.querySelector(".slogan");if(h&&!h.querySelector(".exbn")){const w=document.createElement("div");w.innerHTML=exsBanner();const b=w.firstElementChild;if(b){b.style.position="relative";b.style.zIndex="1";if(sl)sl.after(b);else h.appendChild(b)}}}
+/* 첫 화면 순서: 실고 소개 → 시험 일정 → 필고 → 친구 공유 → 피드백 */
+function exsOrder(){let prev=document.getElementById("about");if(!prev)return;for(const id of["exs","pil","shr"]){const el=document.getElementById(id);if(el){prev.after(el);prev=el}}}
+(()=>{if(typeof document==="undefined")return;const st=document.createElement("style");st.textContent=EXS_CSS;document.head.appendChild(st);
+ const go=()=>{siExsCard();setTimeout(exsOrder,60)};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else setTimeout(go,0)})();
+/* ===== 2027 기능사 시험 일정 끝 ===== */
+
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CIRC=["①","②","③","④"];
+/* 문제 고유번호: 단원 + 문제 글의 해시 (문제 순서가 바뀌어도 기록이 유지되게) */
+const pgHash=s=>{let h=2166136261;for(const c of s){h^=c.codePointAt(0);h=Math.imul(h,16777619)}return(h>>>0).toString(36)};
+PG_Q.forEach(q=>{q.id=q[0]+"_"+pgHash(q[1])});
+const QBY=Object.fromEntries(PG_Q.map(q=>[q.id,q]));
+const PG_CERTS=[{k:"smart",n:"스마트공장기능사",s:"필기 · 60문제 · 60분",on:true},{k:"elex",n:"전자기능사",s:"준비 중",on:false},{k:"auto",n:"자동화설비기능사",s:"준비 중",on:false}];
+let U=null,NICK="",D=null,EX=null,PR=null;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const blank=()=>({v:1,t:0,hist:[],wrong:{},us:{}});
+const LS=k=>"pilgo_"+(U?U.uid:"guest")+"_"+k;
+function lsGet(k,d){try{const v=localStorage.getItem(LS(k));return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(LS(k),JSON.stringify(v))}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(LS(k))}catch(e){}}
+let saveT=null;
+function save(){D.t=Date.now();lsSet("data",D);clearTimeout(saveT);saveT=setTimeout(()=>{try{const F=window.FB;if(F&&U)F.setDoc(F.doc(F.db,"users",U.uid,"app","pilgo"),{data:JSON.stringify(D),t:D.t,last:D.hist.length?D.hist[D.hist.length-1].sc:null,n:D.hist.length}).catch(()=>{})}catch(e){}},800)}
+function toast(m){let t=$("#toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";t.setAttribute("role","status");document.body.appendChild(t)}t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),2000)}
+function confirmBox(title,body,okL,cb,noL="취소"){const o=document.createElement("div");o.className="ov";o.innerHTML=`<div class="ovin" role="dialog" aria-modal="true"><h2>${title}</h2><p class="sub" style="font-size:14.5px">${body}</p><div class="ovbtns"><button class="btn" data-x>${noL}</button><button class="btn pri" data-ok>${okL}</button></div></div>`;document.body.appendChild(o);
+ o.querySelector("[data-x]").onclick=()=>o.remove();o.querySelector("[data-ok]").onclick=()=>{o.remove();cb()};o.onclick=e=>{if(e.target===o)o.remove()};setTimeout(()=>o.querySelector("[data-ok]").focus(),30)}
+const logoSvg=`<svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="pgl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#19b37c"/><stop offset="1" stop-color="#087250"/></linearGradient></defs><rect width="64" height="64" rx="15" fill="url(#pgl)"/><rect x="13" y="12" width="30" height="40" rx="4" fill="#fff" opacity=".95"/><path d="M19 22h18M19 29h18M19 36h10" stroke="#0b8a5f" stroke-width="3" stroke-linecap="round"/><path d="M33 44l5 5 12-14" fill="none" stroke="#ffd34d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function themeBtn(){const cur=document.documentElement.getAttribute("data-theme");return`<button class="chip" id="thb" aria-label="화면 테마 바꾸기">${cur==="dark"?"☀️":cur==="light"?"🌙":"◑"}</button>`}
+function bindTheme(){const b=$("#thb");if(b)b.onclick=()=>{const r=document.documentElement,c=r.getAttribute("data-theme"),dark=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches,n=dark?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("silgo-theme",n)}catch(e){}b.textContent=n==="dark"?"☀️":"🌙"}}
+
+/* ===== 로그인 (실고 계정 그대로) ===== */
+function gate(mode="login",err="",info=""){const L=mode==="login",R=mode==="reset";
+ $("#app").innerHTML=`<header class="hero"><div class="htop"><span class="sp"></span>${themeBtn()}</div>
+ <div class="brand">${logoSvg}<div><h1>필고</h1><span class="tagp">필기 고수</span></div></div>
+ <p class="slogan">필기는 CBT 화면 그대로 미리 풀어 봐요<small>실고 계정으로 바로 로그인돼요. 실고 회원이면 새로 가입할 필요 없어요.</small></p></header>
+ <section class="card gate"><div class="gtabs"><button class="chip" data-gm="login" aria-pressed="${L}">로그인</button><button class="chip" data-gm="signup" aria-pressed="${mode==="signup"}">회원가입</button></div>
+ ${mode==="signup"?`<input id="gnick" placeholder="닉네임 (2글자 이상)" maxlength="12" autocomplete="nickname">`:""}
+ <input id="gmail" type="email" placeholder="이메일" autocomplete="email" inputmode="email">
+ ${R?"":`<input id="gpw" type="password" placeholder="비밀번호${mode==="signup"?" (6자리 이상)":""}" autocomplete="${L?"current-password":"new-password"}">`}
+ ${mode==="signup"?`<input id="gpw2" type="password" placeholder="비밀번호 한 번 더" autocomplete="new-password">`:""}
+ ${err?`<p class="gerr" role="alert">${esc(err)}</p>`:""}${info?`<p class="ginfo">${esc(info)}</p>`:""}
+ <button class="btn pri" id="gok">${L?"로그인":R?"비밀번호 재설정 메일 보내기":"가입하고 시작하기"}</button>
+ ${L?`<button class="linkb" id="gfor">비밀번호를 잊었어요</button>`:""}${R?`<button class="linkb" data-gm="login">로그인으로 돌아가기</button>`:""}
+ <p class="sub">필고와 <a href="/" style="color:var(--accent)">실고(실기 연습)</a>는 같은 계정을 써요.</p></section>
+ <p class="foot">실고 · 실기 고수 / 필고 · 필기 고수</p>`;
+ bindTheme();document.querySelectorAll("[data-gm]").forEach(b=>b.onclick=()=>gate(b.dataset.gm));
+ const f=$("#gfor");if(f)f.onclick=()=>gate("reset");
+ const btn=$("#gok"),v=id=>{const e=$("#"+id);return e?e.value.trim():""};
+ btn.onclick=async()=>{const F=window.FB;if(!F)return gate(mode,"연결 중이에요. 잠시 후 다시 눌러 주세요.");const mail=v("gmail"),pw=$("#gpw")?$("#gpw").value:"";
+  btn.disabled=true;btn.textContent="잠시만...";
+  try{if(L)await F.signInWithEmailAndPassword(F.auth,mail,pw);
+   else if(R){await F.sendPasswordResetEmail(F.auth,mail);gate("login","","재설정 메일을 보냈어요. 메일함(스팸함도)을 확인해 주세요.")}
+   else{const nick=v("gnick");if(nick.length<2)return gate("signup","닉네임은 2글자 이상으로 해 주세요.");if(pw!==$("#gpw2").value)return gate("signup","비밀번호 확인이 달라요.");
+    const c=await F.createUserWithEmailAndPassword(F.auth,mail,pw);
+    await F.setDoc(F.doc(F.db,"users",c.user.uid),{nick,email:mail,joinedAt:Date.now(),lastSeen:Date.now(),stats:{}});
+    try{await F.setDoc(F.doc(F.db,"users",c.user.uid,"app","src"),{s:"pilgo",tag:"pilgo",ref:"",t:Date.now()})}catch(e){}}
+  }catch(e){gate(mode,errMsg(e))}};
+ document.querySelectorAll(".gate input").forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")btn.click()}))}
+function errMsg(e){const c=(e&&e.code)||"";return{"auth/invalid-email":"이메일 형식을 확인해 주세요.","auth/missing-password":"비밀번호를 넣어 주세요.","auth/weak-password":"비밀번호는 6자리 이상으로 해 주세요.","auth/email-already-in-use":"이미 가입한 이메일이에요. 로그인해 주세요 (실고에서 가입했어도 같아요).","auth/invalid-credential":"이메일이나 비밀번호가 맞지 않아요.","auth/wrong-password":"이메일이나 비밀번호가 맞지 않아요.","auth/user-not-found":"가입하지 않은 이메일이에요.","auth/too-many-requests":"너무 많이 시도했어요. 잠시 후 다시 해 주세요.","auth/network-request-failed":"인터넷 연결을 확인해 주세요."}[c]||"문제가 생겼어요. 다시 해 주세요. ("+c+")"}
+async function enter(u){U=u;const F=window.FB;$("#app").innerHTML=`<div class="card"><p class="sub">기록 불러오는 중...</p></div>`;
+ let me=null;try{const s=await F.getDoc(F.doc(F.db,"users",u.uid));if(s.exists())me=s.data()}catch(e){}
+ if(me&&me.blocked){$("#app").innerHTML=`<div class="card"><p>관리자가 이 계정의 사용을 막아놨어요.</p><button class="btn" id="out">로그아웃</button></div>`;$("#out").onclick=()=>F.signOut(F.auth);return}
+ NICK=me&&me.nick||(u.email||"회원").split("@")[0];
+ D=lsGet("data",null)||blank();
+ try{const s=await F.getDoc(F.doc(F.db,"users",u.uid,"app","pilgo"));if(s.exists()){const c=JSON.parse(s.data().data||"null");if(c&&(c.t||0)>(D.t||0))D=c}}catch(e){}
+ D=Object.assign(blank(),D);lsSet("data",D);
+ try{await F.updateDoc(F.doc(F.db,"users",u.uid),{lastSeen:Date.now()})}catch(e){}
+ visit(u.uid);
+ const ex=lsGet("exam",null);if(ex&&ex.end>Date.now()-6e4&&!ex.done){EX=ex;return cbtOpen()}
+ home()}
+/* 날짜별 접속(실고 대시보드와 같은 기록): users/{uid}/app/visits */
+async function visit(uid){try{const day=new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Seoul"}),k="silgo_vis_"+uid;if(localStorage.getItem(k)===day)return;
+ const F=window.FB,ref=F.doc(F.db,"users",uid,"app","visits");let days=[];try{const s=await F.getDoc(ref);if(s.exists())days=s.data().days||[]}catch(e){}
+ if(!days.includes(day)){days.push(day);days=days.slice(-200);await F.setDoc(ref,{days,first:days[0],updatedAt:Date.now()})}localStorage.setItem(k,day)}catch(e){}}
+
+/* ===== 첫 화면 ===== */
+function unitAcc(k){const s=D.us[k];return s&&s[1]?Math.round(100*s[0]/s[1]):null}
+function home(){window.scrollTo(0,0);const H=D.hist,last=H[H.length-1],best=H.reduce((m,h)=>Math.max(m,h.sc),0),wn=Object.keys(D.wrong).filter(id=>QBY[id]).length;
+ $("#app").innerHTML=`<header class="hero"><div class="htop"><span class="sub"><b style="color:var(--fg)">${esc(NICK)}</b></span><span class="sp"></span>${themeBtn()}<button class="chip" id="out">로그아웃</button></div>
+ <div class="brand">${logoSvg}<div><h1>필고</h1><span class="tagp">필기 고수</span></div></div>
+ <p class="slogan">필기는 CBT 화면 그대로 미리 풀어 봐요<small>시험장과 같은 화면으로 풀고, 단원별로 몇 개 틀렸는지 바로 봐요</small></p>
+ ${exsBanner()}
+ <div class="certrow" role="group" aria-label="자격증">${PG_CERTS.map(c=>`<button class="cert" aria-pressed="${c.k==="smart"}" ${c.on?"":"disabled"}><b>${c.n}</b><span>${c.s}</span></button>`).join("")}</div></header>
+ <section class="card"><h2>내 기록</h2><div class="stats">
+  <div class="stat"><span>최근 점수</span><b>${last?last.sc:"–"}</b><small>${last?(last.sc>=60?"합격선 넘었어요":"합격선 60점"):"아직 안 풀었어요"}</small></div>
+  <div class="stat"><span>최고 점수</span><b>${H.length?best:"–"}</b><small>모의고사 ${H.length}회</small></div>
+  <div class="stat"><span>오답 노트</span><b>${wn}</b><small>문제</small></div></div></section>
+ <section class="acts">
+  <button class="act main" id="goex"><span class="ic">📝</span><span><b>실전 모의고사</b><span>60문제 · 60분 · 큐넷 CBT 화면 그대로</span></span></button>
+  <button class="act" id="gopr"><span class="ic">📚</span><span><b>단원별 연습</b><span>12개 단원, 풀자마자 정답이랑 해설</span></span></button>
+  <button class="act" id="gown" ${wn?"":"disabled"} style="${wn?"":"opacity:.6"}"><span class="ic">🔁</span><span><b>오답 노트 다시 풀기</b><span>${wn?`틀린 문제 ${wn}개, 맞히면 노트에서 빠져요`:"모의고사나 연습에서 틀리면 여기 모여요"}</span></span></button>
+ </section>
+ <section class="card exs" aria-labelledby="exsh">${exsHTML()}</section>
+ ${H.length?`<section class="card"><h2>최근 모의고사</h2><ul class="hist">${H.slice(-5).reverse().map((h,i)=>`<li><b>${h.sc}점</b><span class="sub">${new Date(h.t).toLocaleDateString("ko-KR",{month:"numeric",day:"numeric"})} · ${h.ok}/${h.n} · ${Math.max(1,Math.round(h.dur/60))}분</span><span class="p ${h.sc>=60?"pass":"fail"}">${h.sc>=60?"합격":"불합격"}</span></li>`).join("")}</ul></section>`:""}
+ <section class="card"><h2>단원별 정답률</h2><div class="ulist">${Object.entries(PG_UNITS).map(([k,u])=>{const a=unitAcc(k);return`<div class="ubtn" style="cursor:default"><b>${u.n}</b><div class="bar"><i style="width:${a??0}%;${a!==null&&a<60?"background:var(--bad)":""}"></i></div><small>${a===null?"아직 안 풀었어요":`${a}% (${D.us[k][0]}/${D.us[k][1]})`}</small></div>`}).join("")}</div></section>
+ <a class="card silgo" href="/?from=pilgo"><svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#3164f4"/><path d="M8 32h14M42 32h14" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M22 20v24M42 20v24" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M27 32.5l4 4 7.5-9" fill="none" stroke="#ffd34d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>실기는 실고에서</b><br><span class="sub">스마트공장 3D 공장, PLC 래더, 로봇 티칭까지 직접 해 봐요 →</span></span></a>
+ <p class="foot">문제는 큐넷 출제기준에 맞춰 새로 만든 연습 문제예요. 실제 기출과 다를 수 있어요.</p>`;
+ bindTheme();$("#out").onclick=()=>confirmBox("로그아웃할까요?","실고에서도 같이 로그아웃돼요.","로그아웃",()=>window.FB.signOut(window.FB.auth));
+ $("#goex").onclick=()=>confirmBox("실전 모의고사 시작","60문제를 60분 안에 풀어요. 시간이 끝나면 자동으로 제출돼요. 중간에 나가도 이어서 풀 수 있어요.","시작하기",examStart);
+ $("#gopr").onclick=unitPick;const w=$("#gown");if(w&&wn)w.onclick=()=>practice("wrong")}
+
+/* ===== 실전 모의고사 (CBT) ===== */
+function examStart(){const qs=[];for(const[k,u]of Object.entries(PG_UNITS)){const pool=shuffle(PG_Q.filter(q=>q[0]===k));qs.push(...pool.slice(0,u.k))}
+ const list=shuffle(qs).map(q=>({id:q.id,o:shuffle([0,1,2,3])}));
+ EX={list,ans:new Array(list.length).fill(-1),cur:0,start:Date.now(),end:Date.now()+60*60e3,fs:lsGet("fs",17)};lsSet("exam",EX);cbtOpen()}
+let TICK=null;
+function cbtOpen(){document.body.style.overflow="hidden";const o=document.createElement("div");o.className="cbt";o.id="cbt";
+ o.innerHTML=`<div class="cbth"><span class="t">스마트공장기능사 필기 · CBT 모의고사</span><span class="who">수험자 ${esc(NICK)}</span><span class="sp"></span>
+ <span class="fsz" role="group" aria-label="글자 크기">글자<button data-fs="15" aria-label="작게">가</button><button data-fs="17" aria-label="보통" style="font-size:14px">가</button><button data-fs="20" aria-label="크게" style="font-size:16px">가</button></span>
+ <span class="timer" id="tm" aria-label="남은 시간">60:00</span></div>
+ <div class="cbtb"><div class="qpane" id="qp"></div>
+ <aside class="sheet" id="sh" aria-label="답안 표기란"><h3>답안 표기란 <small id="shc"></small><button class="chip shclose" id="shx" aria-label="답안 표기란 닫기">닫기</button></h3><div class="srows" id="sr"></div></aside></div>
+ <div class="cbtf"><button class="btn shtog" id="sht">답안 표기란</button><span class="cnt" id="cnt"></span><span class="sp"></span><button class="btn" id="unq">안 푼 문제</button><button class="btn pri" id="sub">답안 제출</button></div>`;
+ document.body.appendChild(o);
+ o.querySelectorAll("[data-fs]").forEach(b=>b.onclick=()=>{EX.fs=+b.dataset.fs;lsSet("fs",EX.fs);fsApply()});fsApply();
+ $("#sht").onclick=()=>$("#sh").classList.add("on");$("#shx").onclick=()=>$("#sh").classList.remove("on");
+ $("#unq").onclick=()=>{const i=EX.ans.findIndex((a,j)=>a<0&&j>EX.cur),k=i>=0?i:EX.ans.indexOf(-1);if(k<0)return toast("다 풀었어요. 답안 제출을 눌러요");go(k)};
+ $("#sub").onclick=()=>{const un=EX.ans.filter(a=>a<0).length;confirmBox("답안을 제출할까요?",un?`아직 안 푼 문제가 <b>${un}개</b> 있어요. 제출하면 다시 고칠 수 없어요.`:"제출하면 다시 고칠 수 없어요.","제출하기",()=>finish(false),"계속 풀기")};
+ document.addEventListener("keydown",cbtKey);
+ sheetDraw();qDraw();clearInterval(TICK);TICK=setInterval(tick,500);tick()}
+function fsApply(){document.documentElement.style.setProperty("--qfs",EX.fs+"px");document.querySelectorAll("[data-fs]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.fs===EX.fs))}
+function cbtKey(e){if(!$("#cbt")||document.querySelector(".ov"))return;if(/^[1-4]$/.test(e.key)){pick(+e.key-1)}else if(e.key==="ArrowRight")go(EX.cur+1);else if(e.key==="ArrowLeft")go(EX.cur-1)}
+function tick(){const left=Math.max(0,EX.end-Date.now()),m=Math.floor(left/6e4),s=Math.floor(left%6e4/1e3),t=$("#tm");if(!t)return;
+ t.textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;t.classList.toggle("low",left<5*6e4);
+ if(left<5*6e4&&!EX.warn5){EX.warn5=1;toast("5분 남았어요")}
+ if(left<=0)finish(true)}
+function qDraw(){const i=EX.cur,it=EX.list[i],q=QBY[it.id];if(!q)return;const a=EX.ans[i];
+ $("#qp").innerHTML=`<div class="qcard"><div class="qno">${i+1} / ${EX.list.length}</div><p class="qstem">${esc(q[1])}</p>
+ <div class="opts" role="radiogroup" aria-label="${i+1}번 보기">${it.o.map((oi,j)=>`<button class="opt" role="radio" aria-checked="${a===j}" data-j="${j}"><span class="n">${j+1}</span><span>${esc(q[2][oi])}</span></button>`).join("")}</div></div>
+ <div class="qnav"><button class="btn" id="pv" ${i?"":"disabled"}>◀ 이전</button><button class="btn" id="nx" ${i<EX.list.length-1?"":"disabled"}>다음 ▶</button></div>`;
+ $("#qp").querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.j));
+ $("#pv").onclick=()=>go(i-1);$("#nx").onclick=()=>go(i+1);$("#qp").scrollTop=0;
+ document.querySelectorAll(".srow").forEach((r,j)=>r.classList.toggle("cur",j===i));
+ const cr=document.querySelector(".srow.cur");if(cr&&window.innerWidth>820)cr.scrollIntoView({block:"nearest"})}
+function pick(j){EX.ans[EX.cur]=EX.ans[EX.cur]===j?-1:j;lsSet("exam",EX);qDraw();sheetDraw()}
+function go(i){if(i<0||i>=EX.list.length)return;EX.cur=i;lsSet("exam",EX);qDraw();sheetDraw()}
+function sheetDraw(){const n=EX.ans.filter(a=>a>=0).length;$("#cnt").textContent=`푼 문제 ${n} / ${EX.list.length}`;$("#shc").textContent=`안 푼 문제 ${EX.list.length-n}`;
+ $("#sr").innerHTML=EX.list.map((_,i)=>`<div class="srow${i===EX.cur?" cur":""}"><button class="k" data-go="${i}" aria-label="${i+1}번 문제로">${i+1}</button>${[0,1,2,3].map(j=>`<button class="c" data-q="${i}" data-j="${j}" aria-pressed="${EX.ans[i]===j}" aria-label="${i+1}번 ${j+1}번 보기">${CIRC[j]}</button>`).join("")}</div>`).join("");
+ $("#sr").querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{go(+b.dataset.go);$("#sh").classList.remove("on")});
+ $("#sr").querySelectorAll(".c").forEach(b=>b.onclick=()=>{const i=+b.dataset.q,j=+b.dataset.j;EX.cur=i;EX.ans[i]=EX.ans[i]===j?-1:j;lsSet("exam",EX);qDraw();sheetDraw()})}
+function finish(auto){if(!EX||EX.done)return;EX.done=1;clearInterval(TICK);document.removeEventListener("keydown",cbtKey);
+ const res=EX.list.map((it,i)=>{const q=QBY[it.id],me=EX.ans[i]>=0?it.o[EX.ans[i]]:-1;return{id:it.id,u:q[0],me,ok:me===0,o:it.o}});
+ const ok=res.filter(r=>r.ok).length,sc=Math.round(100*ok/res.length),u={};
+ res.forEach(r=>{u[r.u]=u[r.u]||[0,0];u[r.u][1]++;if(!r.ok)u[r.u][0]++;D.us[r.u]=D.us[r.u]||[0,0];D.us[r.u][1]++;if(r.ok)D.us[r.u][0]++;if(!r.ok)D.wrong[r.id]=(D.wrong[r.id]||0)+1});
+ const dur=Math.round((Math.min(Date.now(),EX.end)-EX.start)/1e3);
+ D.hist.push({t:Date.now(),sc,ok,n:res.length,dur,u});D.hist=D.hist.slice(-50);save();lsDel("exam");
+ const o=$("#cbt");if(o)o.remove();document.body.style.overflow="";
+ if(auto)toast("시간이 끝나서 자동으로 제출했어요");result({res,ok,sc,u,dur})}
+
+/* ===== 결과: 점수 + 단원별 틀린 개수 + 내가 찍은 답 / 정답 ===== */
+function result(R,onlyX=true){window.scrollTo(0,0);const pass=R.sc>=60,rows=Object.entries(PG_UNITS).filter(([k])=>R.u[k]).map(([k,u])=>[u.n,R.u[k][0],R.u[k][1]]).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
+ const nx=R.res.length-R.ok;
+ $("#app").innerHTML=`<section class="card"><div class="pgtop"><h2>모의고사 결과</h2><button class="chip" id="hm">홈으로</button></div>
+ <div class="big"><b>${R.sc}점</b><span class="verdict ${pass?"pass":"fail"}">${pass?"합격":"불합격"}</span></div>
+ <p class="sub">${R.res.length}문제 중 ${R.ok}개 맞혔어요 · 걸린 시간 ${Math.floor(R.dur/60)}분 ${R.dur%60}초 · 합격선 60점(36개)</p></section>
+ <section class="card"><h2>단원별로 틀린 개수</h2><table class="utab"><tr><th>단원</th><th style="text-align:right">틀림 / 문제</th><th></th></tr>
+ ${rows.map(([n,x,t])=>`<tr><td>${x/t>=.5?"🔴 ":x?"🟡 ":"🟢 "}${n}</td><td class="n"><b class="${x?"fail":"pass"}">${x}</b> / ${t}</td><td><span class="bar"><i style="width:${Math.round(100*(t-x)/t)}%"></i></span></td></tr>`).join("")}</table>
+ <p class="sub">막대는 맞힌 비율이에요. 🔴 단원부터 단원별 연습으로 다시 풀어 보세요.</p></section>
+ <section class="card"><div class="pgtop"><h2>해설</h2><button class="chip" id="fx" aria-pressed="${onlyX}">틀린 문제만 (${nx})</button><button class="chip" id="fa" aria-pressed="${!onlyX}">전체</button></div>
+ <div class="rv">${R.res.map((r,i)=>({r,i})).filter(x=>!onlyX||!x.r.ok).map(({r,i})=>{const q=QBY[r.id],pos=oi=>r.o.indexOf(oi);
+  return`<div class="rvq${r.ok?"":" x"}"><span class="st"><b>${i+1}.</b> ${esc(q[1])} <span class="pill" style="${r.ok?"":"background:var(--bad-soft);color:var(--bad)"}">${r.ok?"맞음":"틀림"}</span></span>
+  <div class="ans"><span class="me ${r.ok?"o":"x"}">내가 찍은 답: ${r.me<0?"안 풀었어요":`${CIRC[pos(r.me)]} ${esc(q[2][r.me])}`}</span><span class="co">정답: ${CIRC[pos(0)]} ${esc(q[2][0])}</span></div>
+  <p class="exp">${esc(q[3])}</p><span class="sub" style="font-size:12px">${PG_UNITS[q[0]].n}</span></div>`}).join("")||`<p class="empty">틀린 문제가 없어요. 만점이에요!</p>`}</div></section>
+ <div class="acts">${nx?`<button class="act main" id="rx"><span class="ic">🔁</span><span><b>틀린 ${nx}문제 바로 다시 풀기</b><span>맞히면 오답 노트에서 빠져요</span></span></button>`:""}<button class="act" id="hm2"><span class="ic">🏠</span><span><b>홈으로</b><span>기록은 저장됐어요</span></span></button></div>`;
+ $("#hm").onclick=home;$("#hm2").onclick=home;$("#fx").onclick=()=>result(R,true);$("#fa").onclick=()=>result(R,false);
+ const rx=$("#rx");if(rx)rx.onclick=()=>practice("ids",R.res.filter(r=>!r.ok).map(r=>r.id))}
+
+/* ===== 단원별 연습 / 오답 노트 ===== */
+function unitPick(){window.scrollTo(0,0);
+ $("#app").innerHTML=`<section class="card"><div class="pgtop"><h2>단원별 연습</h2><button class="chip" id="hm">홈으로</button></div><p class="sub">단원을 고르면 10문제씩 나와요. 풀자마자 정답과 해설을 보여 줘요.</p>
+ <div class="ulist">${Object.entries(PG_UNITS).map(([k,u])=>{const a=unitAcc(k),n=PG_Q.filter(q=>q[0]===k).length;return`<button class="ubtn" data-u="${k}"><b>${u.n}</b><div class="bar"><i style="width:${a??0}%;${a!==null&&a<60?"background:var(--bad)":""}"></i></div><small>${n}문제 · ${a===null?"아직 안 풀었어요":"정답률 "+a+"%"}</small></button>`}).join("")}
+ <button class="ubtn" data-u="all" style="grid-column:1/-1"><b>전 단원 섞어서 20문제</b><small>시험 직전 빠르게 훑어보기</small></button></div></section>`;
+ $("#hm").onclick=home;document.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>practice(b.dataset.u))}
+function practice(mode,ids){let pool;
+ if(mode==="wrong")pool=shuffle(Object.keys(D.wrong).filter(id=>QBY[id]));
+ else if(mode==="ids")pool=ids.slice();
+ else if(mode==="all")pool=shuffle(PG_Q).slice(0,20).map(q=>q.id);
+ else{const seen=D.wrong;pool=shuffle(PG_Q.filter(q=>q[0]===mode)).sort((a,b)=>(seen[b.id]?1:0)-(seen[a.id]?1:0)).slice(0,10).map(q=>q.id);pool=shuffle(pool)}
+ if(!pool.length)return toast("풀 문제가 없어요");
+ PR={mode,title:mode==="wrong"?"오답 노트":mode==="ids"?"틀린 문제 다시 풀기":mode==="all"?"전 단원 섞어서":PG_UNITS[mode].n,list:pool.map(id=>({id,o:shuffle([0,1,2,3])})),i:0,pick:-1,ok:0};prDraw()}
+function prDraw(){window.scrollTo(0,0);const it=PR.list[PR.i];if(!it)return prEnd();const q=QBY[it.id],done=PR.pick>=0;
+ $("#app").innerHTML=`<section class="card" style="font-size:var(--qfs)"><div class="pgtop" style="font-size:15px"><h2>${esc(PR.title)}</h2><span class="pill">${PR.i+1} / ${PR.list.length}</span><button class="chip" id="hm">그만하기</button></div>
+ <div class="bar"><i style="width:${Math.round(100*PR.i/PR.list.length)}%"></i></div>
+ <p class="qstem">${esc(q[1])}</p>
+ <div class="opts">${it.o.map((oi,j)=>{let c="";if(done){if(oi===0)c=" right";else if(j===PR.pick)c=" wrong"}return`<button class="opt${c}" data-j="${j}" ${done?"disabled":""}><span class="n">${j+1}</span><span>${esc(q[2][oi])}</span></button>`}).join("")}</div>
+ ${done?`<div class="fb ${it.o[PR.pick]===0?"o":"x"}" role="status"><b>${it.o[PR.pick]===0?"정답이에요!":"아쉬워요. 정답은 "+CIRC[it.o.indexOf(0)]+"번이에요"}</b><span>${esc(q[3])}</span></div><button class="btn pri" id="nx">${PR.i<PR.list.length-1?"다음 문제":"결과 보기"}</button>`:""}
+ <span class="sub" style="font-size:12px">${PG_UNITS[q[0]].n}</span></section>`;
+ $("#hm").onclick=()=>{save();home()};
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(PR.pick>=0)return;PR.pick=+b.dataset.j;const ok=it.o[PR.pick]===0,u=q[0];
+  D.us[u]=D.us[u]||[0,0];D.us[u][1]++;if(ok){D.us[u][0]++;PR.ok++;delete D.wrong[it.id]}else D.wrong[it.id]=(D.wrong[it.id]||0)+1;save();prDraw()});
+ const nx=$("#nx");if(nx){nx.onclick=()=>{PR.i++;PR.pick=-1;prDraw()};nx.focus()}}
+function prEnd(){const n=PR.list.length,wn=Object.keys(D.wrong).filter(id=>QBY[id]).length;
+ $("#app").innerHTML=`<section class="card"><h2>${esc(PR.title)} 끝!</h2><div class="big"><b>${PR.ok} / ${n}</b><span class="verdict ${PR.ok/n>=.6?"pass":"fail"}">${Math.round(100*PR.ok/n)}%</span></div>
+ <p class="sub">틀린 문제는 오답 노트에 모였어요 (지금 ${wn}개).</p><div class="ovbtns"><button class="btn" id="hm">홈으로</button><button class="btn pri" id="again">${PR.mode==="wrong"||PR.mode==="ids"?"오답 노트 풀기":"한 번 더"}</button></div></section>`;
+ $("#hm").onclick=home;$("#again").onclick=()=>PR.mode==="wrong"||PR.mode==="ids"?(wn?practice("wrong"):(toast("오답 노트가 비었어요"),home())):practice(PR.mode)}
+
+/* ===== 시작: 실고와 같은 Firebase 로그인 상태를 그대로 받아요 ===== */
+function boot(){const F=window.FB;if(!F)return;F.onAuthStateChanged(F.auth,u=>{if(u)enter(u);else{U=null;D=null;const c=$("#cbt");if(c)c.remove();document.body.style.overflow="";gate()}})}
+if(window.FB)boot();else window.addEventListener("fb-ready",boot,{once:true});
+setTimeout(()=>{if(!window.FB&&$("#app").textContent.includes("불러오는"))$("#app").innerHTML=`<div class="card"><p>서버에 연결하지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.</p><button class="btn pri" onclick="location.reload()">새로고침</button></div>`},12000);
+if("serviceWorker" in navigator&&location.hostname==="silgo-go.github.io")navigator.serviceWorker.register("/sw.js").catch(()=>{});
+</script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{initializeFirestore,doc,getDoc,setDoc,updateDoc}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyA2QZzcbqoR_kTeneZm7VQ_ihvOTFonpgY",authDomain:"silgi-workbench-b23f7.firebaseapp.com",projectId:"silgi-workbench-b23f7",storageBucket:"silgi-workbench-b23f7.firebasestorage.app",messagingSenderId:"196884099191",appId:"1:196884099191:web:3b438fe6a89c8913da5672"});
+const db=initializeFirestore(app,{});/* 필고는 저장 캐시 없이 (실고 탭과 캐시가 부딪히지 않게) */
+window.FB={auth:getAuth(app),db,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail,doc,getDoc,setDoc,updateDoc};
+window.dispatchEvent(new Event("fb-ready"));
+</script>
+</body>
+</html>
